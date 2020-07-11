@@ -11,6 +11,42 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 import { ClientApi } from '@storybook/client-api';
 import { toRequireContext } from '@storybook/core/server';
 import * as storybook from '@storybook/react';
+const createCompiler = require('@storybook/addon-docs/mdx-compiler-plugin');
+import { sync as mdxTransform } from '@mdx-js/mdx'
+import { addHook as overrideRequire } from 'pirates'
+import { transform as babelTransform } from '@babel/core'
+import babelRegister, { revert } from '@babel/register'
+
+
+const compilers = [createCompiler({})];
+
+function transform(code, filename) {
+  const jsx = `
+/* @jsx mdx */
+import React from 'react';
+import { mdx } from '@mdx-js/react';
+${mdxTransform(code, { compilers, filepath: filename })}
+`;
+
+  const { code: transformedCode } = babelTransform(jsx, {
+    presets: [
+      "@babel/preset-react",
+      ["@babel/preset-env",
+        {
+          targets: {
+            node: "current"
+          },
+          modules: "commonjs"
+        }]
+    ],
+  });
+
+  let result = transformedCode;
+
+  console.log(result);
+
+  return result;
+}
 
 import { getOptions } from './utils';
 
@@ -21,6 +57,7 @@ type Output = {
 
 type Configuration = {
   configDir?: string;
+  configFile?: string;
 }
 
 type Options = {
@@ -83,10 +120,16 @@ const getConfigPathParts = (input: string) => {
 };
 
 const configure = (options: Configuration) => {
-  const { configDir } = options;
+  const { configFile, configDir } = options;
   const { files, stories } = getConfigPathParts(configDir);
 
-  files.forEach((file) => require(file));
+
+  // files.forEach((file) => require(file));
+
+  overrideRequire(transform, { exts: [".mdx"] });
+  // babelRegister({ configFile, extensions: [".es6", ".es", ".jsx", ".js", ".mjs", ".mdx"] });
+
+  console.log(stories[0].keys())
 
   if (stories.length > 0) {
     storybook.configure(stories, false as unknown as NodeModule);
