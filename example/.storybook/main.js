@@ -4,5 +4,5 @@ module.exports = {
     '@storybook/addon-links',
     'storybook-addon-playroom',
   ],
-  stories: ['../stories/**/*.stories.mdx'],
+  stories: ['../stories/**/*.stories.js', '../stories/**/*.stories.mdx'],
 };

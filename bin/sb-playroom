@@ -9,8 +9,7 @@ program
   .option('-o, --out-file <path>', 'output file', 'snippets.json')
   .option('-c, --config-file <path>', 'Babel config file')
   .action((configDir = '.storybook', options) => {
-    // require('@babel/register')({ configFile: options.configFile });
-    // require('@babel/register')({ configFile: options.configFile, extensions: [".es6", ".es", ".jsx", ".js", ".mjs",], });
+    require('@babel/register')({ configFile: options.configFile });
     require('../dist/generateSnippets').default(configDir, options);
   });
 

@@ -124,10 +124,9 @@ const configure = (options: Configuration) => {
   const { files, stories } = getConfigPathParts(configDir);
 
 
-  // files.forEach((file) => require(file));
+  files.forEach((file) => require(file));
 
   overrideRequire(transform, { exts: [".mdx"] });
-  // babelRegister({ configFile, extensions: [".es6", ".es", ".jsx", ".js", ".mjs", ".mdx"] });
 
   console.log(stories[0].keys())
 
