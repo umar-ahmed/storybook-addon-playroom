@@ -20,7 +20,7 @@ import babelRegister, { revert } from '@babel/register'
 
 const compilers = [createCompiler({})];
 
-function transform(code, filename) {
+function transform(code: string, filename: string) {
   const jsx = `
 /* @jsx mdx */
 import React from 'react';
@@ -57,7 +57,6 @@ type Output = {
 
 type Configuration = {
   configDir?: string;
-  configFile?: string;
 }
 
 type Options = {
@@ -120,15 +119,13 @@ const getConfigPathParts = (input: string) => {
 };
 
 const configure = (options: Configuration) => {
-  const { configFile, configDir } = options;
+  const { configDir } = options;
   const { files, stories } = getConfigPathParts(configDir);
 
 
   files.forEach((file) => require(file));
 
   overrideRequire(transform, { exts: [".mdx"] });
-
-  console.log(stories[0].keys())
 
   if (stories.length > 0) {
     storybook.configure(stories, false as unknown as NodeModule);
